@@ -1,0 +1,19 @@
+{
+    "name": "hamse/mvc",
+    "require-dev": {
+        "phpunit/phpunit": "^11.4"
+    },
+    "authors": [
+        {
+            "name": "FaycalHamsek",
+            "email": "114609748+FaycalHamsek@users.noreply.github.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "FayFay\\" : "Controllers/",
+            "ModelTest\\" : "Models/" 
+        }
+    },
+    "require": {}
+}

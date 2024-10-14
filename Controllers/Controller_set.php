@@ -1,10 +1,12 @@
 <?php
+namespace FayFay;
+use FayFay\Controller;
 
 class Controller_set extends Controller {
 
   public function action_add() {
 
-    $m = Model::getModel();
+    $m = \ModelTest\Model::getModel();
     if (isset($_POST['name']) && !preg_match("#^\s*$#", $_POST['name']) &&
       isset($_POST['nickname']) && !preg_match("#^\s*$#", $_POST['nickname']) &&
       isset($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) &&
@@ -26,7 +28,7 @@ class Controller_set extends Controller {
   }
 
   public function action_default() {
-    $m = Model::getModel();
+    $m = \ModelTest\Model::getModel();
     $this->render("add");
   }
 

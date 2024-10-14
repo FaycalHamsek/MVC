@@ -1,5 +1,10 @@
 <?php
 
+namespace ModelTest;
+
+Use PDO;
+Use PDOException;
+
 class Model
 {
 

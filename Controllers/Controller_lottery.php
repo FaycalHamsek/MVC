@@ -1,10 +1,12 @@
 <?php
+namespace FayFay;
+use FayFay\Controller;
 
 class controller_lottery extends Controller
 {
     public function action_default()
     {
-        $m = Model::getModel();
+        $m = \ModelTest\Model::getModel();
         $this->render("home");
     }
 
@@ -64,7 +66,7 @@ class controller_lottery extends Controller
 
     public function action_gain(array $arrayLottery, bool $simulation = false)
     {
-        $m = Model::getModel();
+        $m = \ModelTest\Model::getModel();
 
         // Tableau de répartition des gains pour les 10 premiers
         $repartition = [
@@ -150,15 +152,13 @@ class controller_lottery extends Controller
 
     public function action_simulation()
     {
-        $m = Model::getModel();
+        $m = \ModelTest\Model::getModel();
         $return = [];
         if($_POST['NbBot'] == null){
             $this->action_error('une erreur est survenue lors de la récupération de la lotterie.');
             die;
         }
 
-
-        
         for ($i = 0; $i < $_POST['NbBot']; $i++) {
             $numbers = array(0, 0, 0, 0, 0);
             $stars = array(0, 0);

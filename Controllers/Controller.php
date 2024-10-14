@@ -1,5 +1,6 @@
 <?php
 
+namespace FayFay;
 
 abstract class Controller
 {
@@ -22,9 +23,10 @@ abstract class Controller
             //Si c'est le cas, on appelle cette action
             $action = "action_" . $_GET["action"];
             $this->$action();
-        } else {
-            $this->action_default(); //Sinon, on appelle l'action par défaut
-        }
+        } 
+        //else {
+            //$this->action_default(); //Sinon, on appelle l'action par défaut
+        //}
     }
 
 

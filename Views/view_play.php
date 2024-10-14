@@ -1,6 +1,9 @@
 <?php
 require('view_begin.php');
 ?>
+<button onclick="window.location.href='?controller=home&action=home'">Menu</button>
+
+
 <form action="?controller=lottery&action=jouer" method="post">
     <table>
         <thead>
@@ -36,12 +39,27 @@ require('view_begin.php');
             ?>
         </tbody>
     </table>
-    <input type="submit" value="Jouer">
+    <input type="submit" value="Jouer" id="playButton" disabled> <!-- Bouton "Jouer" désactivé au départ -->
 </form>
 
 <button><a href="?controller=set&action=default">Ajouter un joueur</a></button>
 
 <script>
+    // Fonction pour activer ou désactiver le bouton "Jouer"
+    function togglePlayButton() {
+        const playButton = document.getElementById('playButton');
+        const checkboxes = document.querySelectorAll('.player-checkbox');
+        let isAnyChecked = false;
+
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+                isAnyChecked = true; // Au moins un joueur est sélectionné
+            }
+        });
+
+        playButton.disabled = !isAnyChecked; // Activer si un joueur est sélectionné, sinon désactiver
+    }
+
     document.querySelectorAll('.player-checkbox').forEach(function(checkbox) { // selection du joueur
         checkbox.addEventListener('change', function() {
             var idPlayer = this.getAttribute('idPlayer');
@@ -50,18 +68,20 @@ require('view_begin.php');
             var generateButton = document.querySelector('button[generate="generate' + idPlayer + '"]'); // on selectionne dans la variable generateButton le bouton générer
 
             numberInputs.forEach(function(input) {
-                input.disabled = !checkbox.checked; // l'input est desactivté
-                if (!checkbox.checked) { // si il n'est pas check
+                input.disabled = !checkbox.checked; // l'input est désactivé
+                if (!checkbox.checked) { // si il n'est pas coché
                     input.value = ''; // vide
                 }
             });
             starInputs.forEach(function(input) {
-                input.disabled = !checkbox.checked; // l'input est desactivté
-                if (!checkbox.checked) { // si il n'est pas check
+                input.disabled = !checkbox.checked; // l'input est désactivé
+                if (!checkbox.checked) { // si il n'est pas coché
                     input.value = ''; // vide
                 }
             });
             generateButton.disabled = !checkbox.checked; //bouton désactivé
+
+            togglePlayButton(); // Vérifier l'état du bouton "Jouer"
         });
     });
 
