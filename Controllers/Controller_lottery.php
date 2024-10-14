@@ -35,11 +35,11 @@ class controller_lottery extends Controller
         return ($tirage);
     }
 
-    public function action_run()
+    public function action_run(array $loterie)
     {
         $tirage = $this->generateDraw(); # on génère un tirage 
         $position = []; #on crée un tableau vide
-        foreach ($_POST['loto'] as $key => $val) { # pour chaque valeur de POST['loto'] on fait un tableau avec des clés
+        foreach ($loterie['loto'] as $key => $val) { # pour chaque valeur de POST['loto'] on fait un tableau avec des clés
             $position[$key]['score'] = 0; # la valeur de ma clé est de 0
             $position[$key]['tirage']['number'] = $val['number']; # la valeur de ma clé est la valeur des numéros de POST
             $position[$key]['tirage']['stars'] = $val['stars']; # la valeur de ma clé est la valeur des stars de POST
@@ -64,7 +64,7 @@ class controller_lottery extends Controller
 
 
 
-    public function action_gain()
+    public function action_gain(array $arrayLottery, bool $simulation)
     {
         $m = Model::getModel();
 
@@ -86,7 +86,7 @@ class controller_lottery extends Controller
         $somme = 3000000;
 
         // Récupération des résultats du tirage
-        $tmp = $this->action_run();
+        $tmp = $this->action_run($arrayLottery);
         $rank = $tmp["position"];
         $tirage = $tmp["tirage"];
 
@@ -116,13 +116,13 @@ class controller_lottery extends Controller
         foreach ($topRank as $idPlayer => $player) {
             if ($player['score'] === 0) {
                 $gain[$idPlayer] = [
-                    'nickname' => $m->getPlayerNickname($idPlayer),
+                    'nickname' => $simulation ? 'bot numéro '. $idPlayer : $m->getPlayerNickname($idPlayer),
                     'grille' => implode(' ', $player['tirage']['number']) . " | " . implode(' ', $player['tirage']['stars']),
                     'gain' => 0
                 ];
             } else {
                 $gain[$idPlayer] = [
-                    'nickname' => $m->getPlayerNickname($idPlayer),
+                    'nickname' => $simulation ? 'bot numéro '. $idPlayer : $m->getPlayerNickname($idPlayer),
                     'grille' => implode(' ', $player['tirage']['number']) . " | " . implode(' ', $player['tirage']['stars']),
                     'gain' => ($scoreDoublon[$player['score']]['totalTotauxGain'] / $scoreDoublon[$player['score']]['totalPlayer']) * $somme
                 ];
@@ -149,11 +149,11 @@ class controller_lottery extends Controller
 
     public function action_gridBot()
     {
-        $creerBot = $this->action_creerBot($_POST['NbBot']);
+        //$creerBot = $this->action_creerBot($_POST['NbBot']);
         $m = Model::getModel();
-        $bots = $m->getAllBot();
-        $_POST['loto'] = [];
-        foreach ($bots as $bot) {
+        //$bots = $m->getAllBot();
+        $return = [];
+        for ($i=0; $i < $_POST['NbBot']; $i++) {
             $numbers = array(0, 0, 0, 0, 0);
             $stars = array(0, 0);
 
@@ -161,16 +161,15 @@ class controller_lottery extends Controller
                 $numbers[$key] = random_int(1, 49);
             }
 
-
             foreach ($stars as $key => $str) {
                 $stars[$key] = random_int(1, 9);
             }
 
             $tirage = ['number' => $numbers, 'stars' => $stars];
 
-            $_POST['loto'][$bot['id']] = $tirage;
+            $return['loto'][$i] = $tirage;
         }
 
-        $this->action_gain();
+        $this->action_gain($return, true);
     }
 }
