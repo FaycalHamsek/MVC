@@ -1,7 +1,7 @@
 <?php
 require('view_begin.php');
 ?>
-<form action="?controller=lottery&action=gain" method="post">
+<form action="?controller=lottery&action=jouer" method="post">
     <table>
         <thead>
             <tr>

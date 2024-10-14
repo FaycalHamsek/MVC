@@ -73,29 +73,4 @@ class Model
         $req->execute();
         return $req->fetch(PDO::FETCH_ASSOC)['nickname'];
     }
-
-    public function addBot($nbBot)
-    {
-        for ($i = 0; $i < $nbBot; $i++) {
-            $req = $this->bd->prepare("INSERT INTO players (nickname) VALUES ('bot" . $i . "')");
-            $req->execute();
-        }
-    }
-
-    public function getAllBot()
-    {
-        try {
-            $req = $this->bd->prepare("SELECT * FROM players where nickname LIKE 'bot%'");
-            $req->execute();
-            return $req->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            die('Echec ajout ' . $e->getCode() . ': ' . $e->getMessage());
-        }
-    }
-
-    public function removeAllBot()
-    {
-        $req = $this->bd->prepare("DELETE FROM players WHERE id = :id");
-        return $req->execute();
-    }
 }
