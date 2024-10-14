@@ -77,7 +77,7 @@ class Model
     public function addBot($nbBot)
     {
         for ($i = 0; $i < $nbBot; $i++) {
-            $req = $this->bd->prepare("INSERT INTO bot (namebot) VALUES ('bot" . $i . "')");
+            $req = $this->bd->prepare("INSERT INTO players (nickname) VALUES ('bot" . $i . "')");
             $req->execute();
         }
     }
@@ -85,7 +85,7 @@ class Model
     public function getAllBot()
     {
         try {
-            $req = $this->bd->prepare("SELECT * FROM bot");
+            $req = $this->bd->prepare("SELECT * FROM players where nickname LIKE 'bot%'");
             $req->execute();
             return $req->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -95,7 +95,7 @@ class Model
 
     public function removeAllBot()
     {
-        $req = $this->bd->prepare("TRUNCATE TABLE bot");
+        $req = $this->bd->prepare("DELETE FROM players WHERE id = :id");
         return $req->execute();
     }
 }

@@ -30,7 +30,7 @@ class controller_lottery extends Controller
         foreach ($stars as $key => $str) { # pour chaque nombre de mon tableau stars
             $stars[$key] = random_int(1, 9); # on selectionne aléatoirement une valeur entre 1 et 9
         }
-        $stars[1] = 9;
+
         $tirage = ['number' => $numbers, 'stars' => $stars]; # on créé un tableau tirage avec les 2 tableaux précédents
         return ($tirage);
     }
@@ -39,7 +39,6 @@ class controller_lottery extends Controller
     {
         $tirage = $this->generateDraw(); # on génère un tirage 
         $position = []; #on crée un tableau vide
-
         foreach ($_POST['loto'] as $key => $val) { # pour chaque valeur de POST['loto'] on fait un tableau avec des clés
             $position[$key]['score'] = 0; # la valeur de ma clé est de 0
             $position[$key]['tirage']['number'] = $val['number']; # la valeur de ma clé est la valeur des numéros de POST
@@ -114,7 +113,6 @@ class controller_lottery extends Controller
             }
             $i++;
         }
-
         foreach ($topRank as $idPlayer => $player) {
             if ($player['score'] === 0) {
                 $gain[$idPlayer] = [
@@ -134,6 +132,7 @@ class controller_lottery extends Controller
             'listPlayer' => $gain,
             'tirageLoto' => implode(" ", $tirage['number']) . " | " . implode(' ', $tirage['stars'])
         ];
+
         $this->render("results", $data);
     }
 
@@ -150,10 +149,28 @@ class controller_lottery extends Controller
 
     public function action_gridBot()
     {
-        $creerBot= $this->action_creerBot($_POST['NbBot']);
+        $creerBot = $this->action_creerBot($_POST['NbBot']);
         $m = Model::getModel();
         $bots = $m->getAllBot();
-                
-            $stars[1] = 9;
+        $_POST['loto'] = [];
+        foreach ($bots as $bot) {
+            $numbers = array(0, 0, 0, 0, 0);
+            $stars = array(0, 0);
+
+            foreach ($numbers as $key => $num) {
+                $numbers[$key] = random_int(1, 49);
+            }
+
+
+            foreach ($stars as $key => $str) {
+                $stars[$key] = random_int(1, 9);
+            }
+
+            $tirage = ['number' => $numbers, 'stars' => $stars];
+
+            $_POST['loto'][$bot['id']] = $tirage;
         }
+
+        $this->action_gain();
     }
+}
