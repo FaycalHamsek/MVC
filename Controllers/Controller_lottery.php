@@ -1,6 +1,8 @@
 <?php
-namespace FayFay;
-use FayFay\Controller;
+
+namespace Controllers;
+
+use Controllers\Controller;
 
 class controller_lottery extends Controller
 {
@@ -10,7 +12,7 @@ class controller_lottery extends Controller
         $this->render("home");
     }
 
-    public function tireResultatLoto()
+    public function tireResultatLoto(): array
     {
         $numbers = array(
             0,
@@ -34,12 +36,11 @@ class controller_lottery extends Controller
         }
 
         $tirage = ['number' => $numbers, 'stars' => $stars]; # on créé un tableau tirage avec les 2 tableaux précédents
-        return ($tirage);
+        return $tirage;
     }
 
-    public function action_run(array $loterie)
+    public function run(array $loterie, array $tirage): array
     {
-        $tirage = $this->tireResultatLoto(); # on génère un tirage 
         $position = []; #on crée un tableau vide
         foreach ($loterie['loto'] as $key => $val) { # pour chaque valeur de POST['loto'] on fait un tableau avec des clés
             $position[$key]['score'] = 0; # la valeur de ma clé est de 0
@@ -48,13 +49,13 @@ class controller_lottery extends Controller
 
             foreach ($val['number'] as $numberPlayer) { # pour chaque numéros de mon premier tableau numéro dans val
                 if (in_array($numberPlayer, $tirage['number'])) { # on regarde si il est dans le tableau number de mon tirage
-                    $position[$key]['score']  += 1; # si oui on ajoute 1 a la position
+                    $position[$key]['score'] += 1; # si oui on ajoute 1 a la position
                 }
             }
 
             foreach ($val['stars'] as $starPlayer) { # pour chaque étoile de mon deuxieme tableau étoile dans val
                 if (in_array($starPlayer, $tirage['stars'])) { # on regarde si il est dans le tableau stars de mon tirage
-                    $position[$key]['score']  += 1; # si oui on ajoute 1 a la position
+                    $position[$key]['score'] += 1; # si oui on ajoute 1 a la position
                 }
             }
         }
@@ -64,7 +65,7 @@ class controller_lottery extends Controller
         ];
     }
 
-    public function action_gain(array $arrayLottery, bool $simulation = false)
+    public function gain(array $arrayLottery, array $tirage, bool $simulation = false): array
     {
         $m = \ModelTest\Model::getModel();
 
@@ -86,7 +87,7 @@ class controller_lottery extends Controller
         $somme = 3000000;
 
         // Récupération des résultats du tirage
-        $tmp = $this->action_run($arrayLottery);
+        $tmp = $this->run($arrayLottery, $tirage);
         $rank = $tmp["position"];
         $tirage = $tmp["tirage"];
 
@@ -133,33 +134,19 @@ class controller_lottery extends Controller
             'tirageLoto' => implode(" ", $tirage['number']) . " | " . implode(' ', $tirage['stars'])
         ];
 
-        $this->render("results", $data);
+        return $data;
     }
 
-    public function action_bot()
-    {
-        $this->render('simulate');
-    }
-
-    public function action_jouer()
-    {
-        if (isset($_POST['loto'])) {
-            $this->action_gain(['loto' => $_POST['loto']]);
-        } else {
-            $this->action_error('une erreur est survenue lors de la récupération de la lotterie.');
-        }
-    }
-
-    public function action_simulation()
+    public function simulation(int $nbBot): array
     {
         $m = \ModelTest\Model::getModel();
         $return = [];
-        if($_POST['NbBot'] == null){
+        if ($nbBot == null) {
             $this->action_error('une erreur est survenue lors de la récupération de la lotterie.');
             die;
         }
 
-        for ($i = 0; $i < $_POST['NbBot']; $i++) {
+        for ($i = 0; $i < $nbBot; $i++) {
             $numbers = array(0, 0, 0, 0, 0);
             $stars = array(0, 0);
 
@@ -176,7 +163,36 @@ class controller_lottery extends Controller
             $return['loto'][$i] = $tirage;
         }
 
-        $this->action_gain($return, true);
+        return $return;
     }
 
+    public function action_bot()
+    {
+        $this->sendToRender('simulate');
+    }
+
+    public function action_simulation()
+    {
+        if (isset($_POST['NbBot'])) {
+            $tirage = $this->tireResultatLoto(); # on génère un tirage 
+            $this->sendToRender('results', $this->gain($this->simulation($_POST['NbBot']), $tirage, true));
+        } else {
+            $this->action_error('une erreur est survenue lors de la récupération de la lotterie.');
+        }
+    }
+
+    public function action_jouer()
+    {
+        if (isset($_POST['loto'])) {
+            $tirage = $this->tireResultatLoto(); # on génère un tirage 
+            $this->sendToRender('results', $this->gain(['loto' => $_POST['loto']], $tirage));
+        } else {
+            $this->action_error('une erreur est survenue lors de la récupération de la lotterie.');
+        }
+    }
+
+    private function sendToRender(string $vue, array $data = [])
+    {
+        $this->render($vue, $data);
+    }
 }

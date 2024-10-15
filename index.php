@@ -1,4 +1,5 @@
 <?php
+namespace Controllers;
 
 require_once "Utils/functions.php"; //Pour avoir la fonction e()
 require_once "Models/Model.php"; //Inclusion du modèle
@@ -19,12 +20,12 @@ $nom_classe = 'Controller_' . $nom_controller;
 
 //On détermine le nom du fichier contenant la définition du contrôleur
 $nom_fichier = 'Controllers/' .  $nom_classe . '.php';
-
 //Si le fichier existe
 if (file_exists($nom_fichier)) {
     //On l'inclut et on instancie un objet de cette classe
-    include_once $nom_fichier;
-    $controller = new $nom_classe();
+    require_once $nom_fichier; //Inclusion du modèle
+    $nom_classe = "\Controllers\\".$nom_classe;
+    $controller = (new $nom_classe())->action_default();
 } else {
     exit("Error 404: not found!");
 }

@@ -3,70 +3,115 @@
 class controllerLotteryTest extends PHPUnit\Framework\TestCase
 {
 
-   
-        public function testLottery()
+    public function testLottery()
     {
-        $results = ((new \FayFay\controller_lottery)->tireResultatLoto());
+        $results = ((new \Controllers\controller_lottery)->tireResultatLoto());
+        $this->assertIsArray($results);
+        $this->assertIsArray($results['number']);
+        $this->assertIsArray($results['stars']);
         $this->assertCount(5, $results['number']);
         $this->assertCount(2, $results['stars']);
     }
-    
+
 
     public function testActionRun()
     {
-        $controller = new \FayFay\controller_lottery();
+        $controller = new \Controllers\controller_lottery();
 
-        $loterie = [
+        $tirage = [
+            'number' => [1, 2, 3, 4, 5],
+            'stars' => [1, 2]
+        ];
+
+        $gilleJoueur = [
             'loto' => [
-                [
+                23 => [
+
                     'number' => [1, 2, 3, 4, 5],
                     'stars' => [1, 2]
+
                 ],
-                [
-                    'number' => [10, 11, 12, 13, 14],
-                    'stars' => [8, 9]
+                24 => [
+
+                    'number' => [7, 6, 8, 9, 5],
+                    'stars' => [7, 1]
+
+                ],
+                25 => [
+
+                    'number' => [9, 8, 7, 6, 5],
+                    'stars' => [9, 2]
+
+                ],
+                26 => [
+
+                    'number' => [9, 8, 7, 6, 5],
+                    'stars' => [9, 2]
+
                 ]
             ]
         ];
-
-        $result = $controller->action_run($loterie);
-
-        $this->assertArrayHasKey('position', $result);
-        $this->assertArrayHasKey('tirage', $result);
-
-        // Vérification des scores et du tirage
-        $this->assertEquals(5, count($result['tirage']['number']));  // 5 numéros tirés
-        $this->assertEquals(2, count($result['tirage']['stars']));   // 2 étoiles tirées
-        $this->assertIsArray($result['position']);
+        $resultats = ($controller->run($gilleJoueur, $tirage));
+        $this->assertArrayHasKey('position', $resultats);
+        $this->assertArrayHasKey('tirage', $resultats);
+        $this->assertEquals(7, $resultats['position'][23]['score']);
+        $this->assertEquals(2, $resultats['position'][24]['score']);
+        $this->assertEquals([1, 2, 3, 4, 5], $resultats['tirage']['number']);
+        $this->assertEquals([1, 2], $resultats['tirage']['stars']);
     }
 
     public function testActionGain()
     {
-        $controller = $this->getMockBuilder(\FayFay\controller_lottery::class)
-            ->onlyMethods(['render'])
-            ->getMock();
 
-        // Capture les données passées à render
-        $controller->expects($this->once())
-            ->method('render')
-            ->with(
-                $this->equalTo('results'),
-                $this->callback(function ($data) {
-                    $this->assertArrayHasKey('listPlayer', $data);
-                    $this->assertArrayHasKey('tirageLoto', $data);
-                    return true;
-                })
-            );
+        $controller = new \Controllers\controller_lottery();
 
-        $arrayLottery = [
+        $tirage = [
+            'number' => [1, 2, 3, 4, 5],
+            'stars' => [1, 2]
+        ];
+
+        $gilleJoueur = [
             'loto' => [
-                [
+                23 => [
+
                     'number' => [1, 2, 3, 4, 5],
                     'stars' => [1, 2]
-                ]
+
+                ],
+                24 => [
+
+                    'number' => [7, 6, 8, 9, 5],
+                    'stars' => [7, 1]
+
+                ],
+                25 => [
+
+                    'number' => [9, 8, 7, 6, 5],
+                    'stars' => [9, 2]
+                ],
             ]
         ];
 
-        $controller->action_gain($arrayLottery, true);
+        $results = $controller->gain($gilleJoueur, $tirage, TRUE);
+        $this->assertEquals(1200000, $results['listPlayer'][23]['gain']);
+        $this->assertEquals(480000, $results['listPlayer'][24]['gain']);
+        $this->assertEquals(480000, $results['listPlayer'][25]['gain']);
+        $this->assertEquals("1 2 3 4 5 | 1 2", $results['listPlayer'][23]['grille']);
+        $this->assertEquals("7 6 8 9 5 | 7 1", $results['listPlayer'][24]['grille']);
+    }
+
+    public function testSimulation()
+    {
+
+        $controller = new \Controllers\controller_lottery();
+
+        $nbBots= 5;
+
+        $results = $controller->simulation($nbBots);
+
+        $this->assertEquals(5, count($results['loto']));
+
+
+
     }
 }

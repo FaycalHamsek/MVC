@@ -1,7 +1,7 @@
 <?php
 
-namespace FayFay;
-use FayFay\Controller;
+namespace Controllers;
+use Controllers\Controller;
 
 class Controller_play extends Controller{
 

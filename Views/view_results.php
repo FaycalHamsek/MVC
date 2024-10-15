@@ -4,13 +4,13 @@ require('view_begin.php');
 ?>
 <h1><?= $data['tirageLoto'] ?></h1>
 
-<table>
-    <thead>
+<table class="table">
+    <thead class="thead-dark">
         <tr>
-            <th>Place</th>
-            <th>Pseudo</th>
-            <th>Grille</th>
-            <th>Gain</th>
+            <th scope="col">Place</th>
+            <th scope="col">Pseudo</th>
+            <th scope="col">Grille</th>
+            <th scope="col">Gain</th>
         </tr>
     </thead>
     <tbody>
@@ -19,7 +19,7 @@ require('view_begin.php');
         foreach ($data['listPlayer'] as $ligne):
         ?>
             <tr>
-                <td><?= $i ?></td>
+                <th scope="row"><?= $i ?></th>
                 <td><?= $ligne['nickname'] ?></td>
                 <td><?= $ligne['grille'] ?></td>
                 <td><?= $ligne['gain'] ?></td>
