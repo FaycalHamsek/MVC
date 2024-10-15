@@ -1,0 +1,9 @@
+/* styles.css */
+.custom-bg {
+    background: linear-gradient(to bottom right, #004080, #00aaff); /* Dégradé du bleu foncé au bleu clair */
+    height: 100vh; /* Assurez-vous que le fond remplit toute la hauteur de la fenêtre */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

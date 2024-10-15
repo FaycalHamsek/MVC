@@ -2,7 +2,7 @@
 require('view_begin.php');
 
 ?>
-<h1><?= $data['tirageLoto'] ?></h1>
+<h1 class="text-center"><?= $data['tirageLoto'] ?></h1>
 
 <table class="table">
     <thead class="thead-dark">

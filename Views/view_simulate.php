@@ -1,11 +1,9 @@
 <?php
 require('view_begin.php');
 ?>
-<button onclick="window.location.href='?controller=home&action=home'">Menu</button>
-
 <form method="post" action="?controller=lottery&action=simulation">
-    <input type="number" name="NbBot" min='1' max='100' id="nbBot">
-    <input type="submit" value="Simuler" id="simulateButton" disabled>
+    <input type="number" name="NbBot" min='1' max='100' id="nbBot" class="form-control">
+    <input type="submit" value="Simuler" id="simulateButton" class="btn btn-primary" disabled>
 </form>
 
 <script>
