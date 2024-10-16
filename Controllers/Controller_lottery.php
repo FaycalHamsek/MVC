@@ -14,6 +14,7 @@ class controller_lottery extends Controller
 
     public function tireResultatLoto(): array
     {
+        $m = \ModelTest\Model::getModel();
         $numbers = array(
             0,
             0,
@@ -36,7 +37,9 @@ class controller_lottery extends Controller
         }
 
         $tirage = ['number' => $numbers, 'stars' => $stars]; # on créé un tableau tirage avec les 2 tableaux précédents
+        $m->sendTirageToDB($tirage);
         return $tirage;
+        
     }
 
     public function run(array $loterie, array $tirage): array
@@ -93,14 +96,22 @@ class controller_lottery extends Controller
 
         // Tableau pour stocker les gains de chaque joueur
         $gain = [];
+
         // Tri des résultats par ordre décroissant
         uasort($rank, function ($a, $b) {
             return $b['score'] <=> $a['score']; // Tri décroissant par score
         });
 
-        // Sélection des 10 premiers résultats
-        $topRank = array_slice($rank, 0, 10, true);
+        // Sélection des résultats (jusqu'au maximum de 10 joueurs)
+        $topRank = array_slice($rank, 0, min(10, count($rank)), true);
 
+        // Créer un tableau de répartition adapté au nombre de joueurs présents
+        $repartition = array_slice($repartition, 0, count($topRank));
+
+        // Initialisation du total de gains distribués
+        $totalDistribue = 0;
+
+        // Calcul de la répartition initiale des gains
         $scoreDoublon = [];
         $i = 0;
         foreach ($topRank as $idPlayer => $player) {
@@ -114,6 +125,8 @@ class controller_lottery extends Controller
             }
             $i++;
         }
+
+        // Calcul des gains pour chaque joueur
         foreach ($topRank as $idPlayer => $player) {
             if ($player['score'] === 0) {
                 $gain[$idPlayer] = [
@@ -122,13 +135,31 @@ class controller_lottery extends Controller
                     'gain' => 0
                 ];
             } else {
+                $playerGain = ($scoreDoublon[$player['score']]['totalTotauxGain'] / $scoreDoublon[$player['score']]['totalPlayer']) * $somme;
                 $gain[$idPlayer] = [
                     'nickname' => $simulation ? 'bot numéro ' . $idPlayer : $m->getPlayerNickname($idPlayer),
                     'grille' => implode(' ', $player['tirage']['number']) . " | " . implode(' ', $player['tirage']['stars']),
-                    'gain' => ($scoreDoublon[$player['score']]['totalTotauxGain'] / $scoreDoublon[$player['score']]['totalPlayer']) * $somme
+                    'gain' => $playerGain
                 ];
+                $totalDistribue += $playerGain;
             }
         }
+
+        // Redistribuer le montant restant si tout n'a pas été distribué
+        $montantRestant = $somme - $totalDistribue;
+        if ($montantRestant > 0) {
+            // Trouver les joueurs avec un score supérieur à zéro
+            $joueursAvecScore = array_filter($topRank, function ($player) {
+                return $player['score'] > 0;
+            });
+
+            // Répartition du montant restant entre ces joueurs
+            $nombreJoueursAvecScore = count($joueursAvecScore);
+            foreach ($joueursAvecScore as $idPlayer => $player) {
+                $gain[$idPlayer]['gain'] += $montantRestant / $nombreJoueursAvecScore;
+            }
+        }
+
         $data = [
             'listPlayer' => $gain,
             'tirageLoto' => implode(" ", $tirage['number']) . " | " . implode(' ', $tirage['stars'])
@@ -146,21 +177,21 @@ class controller_lottery extends Controller
             die;
         }
 
-        for ($i = 0; $i < $nbBot; $i++) {
-            $numbers = array(0, 0, 0, 0, 0);
-            $stars = array(0, 0);
+        for ($i = 0; $i < $nbBot; $i++) { #on fait une boucle qui va tourner nbBot fois
+            $numbers = array(0, 0, 0, 0, 0);# on initialise le tableau de numéro
+            $stars = array(0, 0);# on initialise le tableau d'étoiles
 
-            foreach ($numbers as $key => $num) {
-                $numbers[$key] = random_int(1, 49);
+            foreach ($numbers as $key => $num) { 
+                $numbers[$key] = random_int(1, 49); # on remplit le tableau de numéro
             }
 
             foreach ($stars as $key => $str) {
-                $stars[$key] = random_int(1, 9);
+                $stars[$key] = random_int(1, 9); # on remplit le tableau d'étoiles
             }
 
-            $tirage = ['number' => $numbers, 'stars' => $stars];
+            $tirage = ['number' => $numbers, 'stars' => $stars]; # on créé un tableau tirage avec les 2 tableaux
 
-            $return['loto'][$i] = $tirage;
+            $return['loto'][$i] = $tirage; # on attribue le tableau tirage au bot a l'indice $i
         }
 
         return $return;

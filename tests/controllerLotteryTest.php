@@ -93,9 +93,9 @@ class controllerLotteryTest extends PHPUnit\Framework\TestCase
         ];
 
         $results = $controller->gain($gilleJoueur, $tirage, TRUE);
-        $this->assertEquals(1200000, $results['listPlayer'][23]['gain']);
-        $this->assertEquals(480000, $results['listPlayer'][24]['gain']);
-        $this->assertEquals(480000, $results['listPlayer'][25]['gain']);
+        $this->assertEquals(1480000, $results['listPlayer'][23]['gain']);
+        $this->assertEquals(760000, $results['listPlayer'][24]['gain']);
+        $this->assertEquals(760000, $results['listPlayer'][25]['gain']);
         $this->assertEquals("1 2 3 4 5 | 1 2", $results['listPlayer'][23]['grille']);
         $this->assertEquals("7 6 8 9 5 | 7 1", $results['listPlayer'][24]['grille']);
     }

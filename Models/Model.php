@@ -2,8 +2,8 @@
 
 namespace ModelTest;
 
-Use PDO;
-Use PDOException;
+use PDO;
+use PDOException;
 
 class Model
 {
@@ -78,4 +78,14 @@ class Model
         $req->execute();
         return $req->fetch(PDO::FETCH_ASSOC)['nickname'];
     }
+
+    public function sendTirageToDB($tab)
+{
+    $numeros = '{' . implode(',', $tab['number']) . '}';
+    $etoiles = '{' . implode(',', $tab['stars']) . '}';
+    $req = $this->bd->prepare("INSERT INTO tirageloto (numeros, etoiles) VALUES (:numeros, :etoiles)");
+    $req->bindValue(':numeros', $numeros, PDO::PARAM_STR);
+    $req->bindValue(':etoiles', $etoiles, PDO::PARAM_STR);
+    return $req->execute();
+}
 }
