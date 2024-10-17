@@ -67,7 +67,8 @@ class Model
             $req->bindValue(':phone', $info['phone']);
             return $req->execute();
         } catch (PDOException $e) {
-            die('Echec ajout ' . $e->getCode() . ': ' . $e->getMessage());
+            
+            die('Echec ajout le pseudo est déjà utilisé');
         }
     }
 

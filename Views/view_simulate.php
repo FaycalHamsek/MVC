@@ -2,7 +2,7 @@
 require('view_begin.php');
 ?>
 <form method="post" action="?controller=lottery&action=simulation">
-    <input type="number" name="NbBot" min='1' max='100' id="nbBot" class="form-control">
+    <input type="number" name="NbBot" min='1' max='100' id="nbBot" class="form-control" placeholder="Insérez nombre">
     <input type="submit" value="Simuler" id="simulateButton" class="btn btn-primary" disabled>
 </form>
 
